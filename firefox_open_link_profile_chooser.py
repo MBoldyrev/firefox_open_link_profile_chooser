@@ -45,8 +45,10 @@ class Opener:
 
     @staticmethod
     def open_with_profile(profile: str, config: 'Config'):
-        args = f'"{" ".join(sys.argv[1:])}"'
-        subprocess.run(['i3-msg', 'exec', f'{config.firefox_binary_path} -P {profile} {args}'])
+        def escape(s: str):
+            return re.sub(r'(["\\])', r'\\\1', s)
+        args = '"{}"'.format('" "'.join(escape(arg) for arg in sys.argv[1:]))
+        subprocess.run(['i3-msg', 'exec', f'"{escape(config.firefox_binary_path)} -P {escape(profile)} {escape(args)}"'])
 
 
 class OpenerFixedProfile(Opener):
